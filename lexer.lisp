@@ -26,6 +26,7 @@
     ("let me describe" . :let)
     ("as" . :as)
     ("let me tell you about a fable called" . :defun)
+    ("so long as" . :while)
     ("about" . :with)
     ("with" . :with)
     ("the end" . :block-end)
@@ -39,6 +40,8 @@
     ("but alternatively that" . :or)
     ("it is untrue that" . :not)
     ("greet" . :print)
+    ("the user" . :true)
+    ("nothingness" . :nil)
     ("the trick or treat cry" . :read-line))
   "Describes the list of possible 'keywords' in the language
 along with tokens to represent their meaning")

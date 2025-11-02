@@ -26,16 +26,23 @@
          (name (cdadr current-line))
          (components (split-list current-line :then))
          (parameters (cadr (split-list (car components) :with)))
-         (parameter-list (split-list parameters :and)))
+         (parameter-list (split-list parameters :also)))
     (setf current-line (cdr lines))
     (values (nconc (list 'defun (intern (strip-spaces name)) (map 'list (lambda (x) (get-literal (cdar x))) parameter-list))
                    (loop :while (not (eq (caaar current-line) :block-end))
                          :collect (setf current-line (parse-line current-line))))
             (cdr current-line))))
 
+(defun parse-funcall (lines)
+  (let* ((current-line (car lines))
+         (name (cdar current-line))
+         (parameters (split-list (cadr (split-list current-line :with)) :also)))
+    (values (cons (get-literal name)
+                  (map 'list #'parse-expression parameters))
+            (cdr lines))))
+
 (defun parse-expression (expr-list)
   (get-literal (cdar expr-list)))
-
 
 (defun parse-if (lines)
   (let* ((current-line (car lines))
@@ -73,7 +80,7 @@
          (destination (car current-word))
          (control-string (car (setf current-word (cdr current-word))))
          (value (loop :for (lexeme next) :on (cdr current-word) :by #'cddr :while (or lexeme next)
-                      :if (or (not (eq (car lexeme) :literal)) (and (not (eq (car next) :and)) next))
+                      :if (or (not (eq (car lexeme) :literal)) (and (not (eq (car next) :also)) next))
                         :do (return)
                       :else
                         :collect (cdr lexeme)
@@ -102,7 +109,7 @@
 (defun parse-let (lines)
   (let* ((current-line (car lines))
          (bindings (map 'list (lambda (x) (list (parse-expression (car x)) (parse-expression (cadr x))))
-                        (map 'list (lambda (x) (split-list x :as)) (split-list (cdr current-line) :and)))))
+                        (map 'list (lambda (x) (split-list x :as)) (split-list (cdr current-line) :also)))))
     (setf lines (cdr lines))
     (values (nconc (list 'let bindings)
                    (loop :while (not (eq (caaar lines) :block-end))
@@ -114,7 +121,6 @@
           (cdr lines)))
 
 (defun parse-line (lines)
-  (format t "~A~%" lines)
   (let* ((current-line (car lines)))
     (case (caar current-line)
       (:defun (parse-function lines))

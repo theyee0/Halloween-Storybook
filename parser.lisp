@@ -116,7 +116,7 @@
 (defun parse-line (lines)
   (format t "~A~%" lines)
   (let* ((current-line (car lines)))
-    (case (car current-line)
+    (case (caar current-line)
       (:defun (parse-function lines))
       (:while (parse-while lines))
       (:if (parse-if lines))
@@ -129,8 +129,8 @@
 
 (defun parse-lines (lines)
   (loop :while lines
-        :collect (multiple-value-bind (value line) (parse-line lines)
-                   (setf lines line)
+        :collect (multiple-value-bind (value remaining-lines) (parse-line lines)
+                   (setf lines remaining-lines)
                    (if (eq value :parse-error)
                        (progn
                          (format t "Error parsing reached")

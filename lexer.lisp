@@ -42,6 +42,7 @@
     ("but alternatively that" . :or)
     ("it is untrue that" . :not)
     ("greet" . :print)
+    ("the chant" . :string)
     ("the user" . :true)
     ("nothingness" . :nil)
     ("the trick or treat cry" . :read-line))
@@ -100,10 +101,12 @@ string/symbol pairs in +lexemes+"
                                                          (min (+ 2 index)
                                                               (length line)))))))
     (T (multiple-value-bind (lexeme index) (trie-lookup *keyword-tree* line)
-         (cons (cons lexeme nil)
-               (lex-line (subseq line
-                                 (min (1+ index)
-                                      (length line)))))))))
+         (let ((remaining (lex-line (subseq line (min (1+ index) (length line))))))
+           (if (eq lexeme :string)
+               (cons (cons lexeme (car remaining))
+                     (cdr remaining))
+               (cons (cons lexeme nil)
+                     remaining)))))))
 
 (defun lex-lines (lines)
   "Given a list of lines, return a list of those lines, tokenized"
@@ -131,5 +134,6 @@ string/symbol pairs in +lexemes+"
 
 (defun clean-file (file-string)
   "Break file apart by spaces into words"
-  (let ((words (uiop:split-string file-string :separator " ")))
-    (build-lines words)))
+  (let ((words (uiop:split-string file-string :separator '(#\Space #\Newline))))
+    (build-lines (mapcan (lambda (x) (and (not (string= x "")) (list x)))
+                         words))))

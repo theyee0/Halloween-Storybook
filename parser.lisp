@@ -109,7 +109,6 @@ somewhat in line with the expectations of C-based languages")
 (defun get-precedence (operator)
   (cdr (assoc operator +precedences+)))
 
-
 (defun eval-rpn-stack (list)
   (when (null (assoc (car list) +functions+))
     (return-from eval-rpn-stack (values (car list)
@@ -130,17 +129,18 @@ somewhat in line with the expectations of C-based languages")
         (output (list)))
     (loop :for expr :in expr-list
           :do
-             (if (eq (car expr) :literal)
-                 (push (get-literal (cdr expr)) output)
-                 (let ((precedence (get-precedence (car expr))))
-                   (when (null precedence)
-                     (return-from parse-expression (values :parse-error :parse-error)))
-                   (loop :while (and operators
-                                     (>= (get-precedence (car operators)) precedence))
-                         :do
-                            (push (car operators) output)
-                            (pop operators))
-                   (push (car expr) operators))))
+             (cond
+               ((eq (car expr) :literal) (push (get-literal (cdr expr)) output))
+               ((eq (car expr) :string) (push (cdr expr) output))
+               (t (let ((precedence (get-precedence (car expr))))
+                    (when (null precedence)
+                      (return-from parse-expression (values :parse-error :parse-error)))
+                    (loop :while (and operators
+                                      (>= (get-precedence (car operators)) precedence))
+                          :do
+                             (push (car operators) output)
+                             (pop operators))
+                    (push (car expr) operators)))))
     (setf output (nconc operators output))
     (eval-rpn-stack output)))
 
@@ -200,6 +200,11 @@ somewhat in line with the expectations of C-based languages")
          (operations (cdr current-line)))
     (values (list 'loop :while (parse-expression condition) :do (parse-line operations))
             (cdr lines))))
+
+(defun parse-string (line)
+  (let* ((literal (cadr line))
+         (string (cdr literal)))
+    (values string (cddr line))))
 
 (defun parse-set (lines)
   (let* ((current-line (car lines)))

@@ -2,7 +2,7 @@
 
 (in-package #:parser)
 
-(defparameter +precendences+
+(defparameter +precedences+
   '((:inc . 8)
     (:dec . 8)
     (:times . 7)
@@ -107,7 +107,7 @@ somewhat in line with the expectations of C-based languages")
             (cdr lines))))
 
 (defun get-precedence (operator)
-  (cdr (assoc operator +precendences+)))
+  (cdr (assoc operator +precedences+)))
 
 
 (defun eval-rpn-stack (list)

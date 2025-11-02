@@ -7,10 +7,10 @@
                   (coerce line 'list))
           'string))
 
-(defun literal-type (lexeme)
+(defun get-literal (lexeme)
   (cond
     ((every #'digit-char-p lexeme) (parse-integer lexeme))
-    ((every (lambda (x) (or (alpha-char-p x) (char= x #\Space))) lexeme) (strip-spaces lexeme))
+    ((every (lambda (x) (or (alpha-char-p x) (char= x #\Space))) lexeme) (intern (strip-spaces lexeme)))
     (T nil)))
 
 (defun split-list (list separator)
@@ -28,13 +28,14 @@
          (parameters (cadr (split-list (car components) :with)))
          (parameter-list (split-list parameters :and)))
     (setf current-line (cdr lines))
-    (values (nconc (list 'defun (intern (strip-spaces name)) (map 'list (lambda (x) (intern (literal-type (cdar x)))) parameter-list))
+    (values (nconc (list 'defun (intern (strip-spaces name)) (map 'list (lambda (x) (get-literal (cdar x))) parameter-list))
                    (loop :while (not (eq (caaar current-line) :block-end))
                          :collect (setf current-line (parse-line current-line))))
             (cdr current-line))))
 
 (defun parse-expression (expr-list)
-  nil)
+  (get-literal (cdar expr-list)))
+
 
 (defun parse-if (lines)
   (let* ((current-line (car lines))
@@ -95,15 +96,22 @@
 
 (defun parse-set (lines)
   (let* ((current-line (car lines)))
-    (values (list 'setf (cadr lines) (caddr lines))
-           (cdr lines))))
+    (values (list 'setf (get-literal (cdadr current-line)) (get-literal (cdaddr current-line)))
+            (cdr lines))))
 
 (defun parse-let (lines)
   (let* ((current-line (car lines))
-         (current-word (car current-line)))))
+         (bindings (map 'list (lambda (x) (list (parse-expression (car x)) (parse-expression (cadr x))))
+                        (map 'list (lambda (x) (split-list x :as)) (split-list (cdr current-line) :and)))))
+    (setf lines (cdr lines))
+    (values (nconc (list 'let bindings)
+                   (loop :while (not (eq (caaar lines) :block-end))
+                         :collect (setf lines (parse-line lines))))
+            (cdr lines))))
 
 (defun parse-readline (lines)
-  (list 'read-line))
+  (values (list 'read-line)
+          (cdr lines)))
 
 (defun parse-line (lines)
   (format t "~A~%" lines)

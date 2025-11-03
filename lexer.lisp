@@ -14,7 +14,7 @@
     ("was conflagrated by" . :times)
     ("was split into groups of" . :divide)
     ("were left as a group of those who couldn't make a group of" . :mod)
-    ("observe the faraway graveyard" . :defparameter)
+    ("observe the faraway graveyard" . :defvar)
     ("an extra ghoul joined to" . :inc)
     ("a ghoul left from" . :dec)
     ("the ghouls, spirit world or not in" . :abs)

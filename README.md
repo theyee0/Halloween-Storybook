@@ -4,6 +4,8 @@ An unconventional programming language with a syntax resembling a poorly written
 # Syntax and Features
 This language implements a subset of the functions from common lisp, but in a distinctly procedural style to match the goal of having a storytelling vibe.
 
+<img width="1920" height="1200" alt="20251102_22h55m36s_grim" src="https://github.com/user-attachments/assets/41b85021-14e7-46ae-a633-27fff3d774f5" />
+
 ## Abstractions
 | Concept    | Translation  |
 | ---        | ---          |

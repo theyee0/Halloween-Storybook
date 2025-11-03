@@ -8,4 +8,5 @@
   :serial t
   :components ((:file "package")
                (:file "lexer")
+               (:file "parser")
                (:file "halloween-storybook")))

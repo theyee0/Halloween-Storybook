@@ -2,8 +2,6 @@
 
 (in-package #:lexer)
 
-(declaim (optimize (debug 3)))
-
 (defparameter +lexemes+
   '(("had the same feeling as" . :equal)
     ("was completely different from" . :not-equal)
@@ -16,13 +14,14 @@
     ("was conflagrated by" . :times)
     ("was split into groups of" . :divide)
     ("were left as a group of those who couldn't make a group of" . :mod)
+    ("observe the faraway graveyard" . :defparameter)
     ("an extra ghoul joined to" . :inc)
     ("a ghoul left from" . :dec)
     ("the ghouls, spirit world or not in" . :abs)
     ("the largest crowd in" . :max)
     ("the smallest crowd in" . :min)
-    ("a blind appartion of at most" . :random)
-    ("invaded with" . :set)
+    ("a blind apparition of at most" . :random)
+    ("consider the graveyard" . :set)
     ("let me describe" . :let)
     ("as" . :as)
     ("recalling the fable of" . :funcall)
@@ -43,7 +42,7 @@
     ("it is untrue that" . :not)
     ("greet" . :print)
     ("the chant" . :string)
-    ("the user" . :true)
+    ("the trick-or-treater" . :true)
     ("nothingness" . :nil)
     ("the trick or treat cry" . :read-line))
   "Describes the list of possible 'keywords' in the language
@@ -103,7 +102,7 @@ string/symbol pairs in +lexemes+"
     (T (multiple-value-bind (lexeme index) (trie-lookup *keyword-tree* line)
          (let ((remaining (lex-line (subseq line (min (1+ index) (length line))))))
            (if (eq lexeme :string)
-               (cons (cons lexeme (car remaining))
+               (cons (cons lexeme (cdar remaining))
                      (cdr remaining))
                (cons (cons lexeme nil)
                      remaining)))))))

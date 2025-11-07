@@ -1,7 +1,10 @@
 # Halloween-Storybook
 An unconventional programming language with a syntax resembling a poorly written Halloween story.
 
-<img width="1920" height="1200" alt="20251102_22h55m36s_grim" src="https://github.com/user-attachments/assets/41b85021-14e7-46ae-a633-27fff3d774f5" />
+# Demo
+Here is an example of the process, starting from a source file implementing the game of guessing a number. It shows the compilation and execution process.
+
+https://github.com/user-attachments/assets/bd14b107-b288-4415-b551-ce071a5cb059
 
 # Getting started
 To build the transpiler, you can run
